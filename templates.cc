@@ -1,4 +1,5 @@
 // CMAKE
+// ********************************
 /*
 cmake_minimum_required(VERSION 3.22)
 project(olymp)
@@ -12,9 +13,13 @@ add_executable(olymp
 
 add_compile_definitions(LOCAL=true)
 */
+// ********************************
 
 
 // STRESS-tests
+// ********************************
+
+// SHELL-client
 /*
 out_data="a"
 out_sol_data="a"
@@ -43,19 +48,200 @@ fi
 */
 
 
+// GENERATORS (python) by github.com/TheEvilBird
+/*
+# files: generators.py gen.py stress.py
+
+import random
+import heapq
+
+def gen_num(L: int, R: int):
+    """
+    Generates a number between L and R.
+    """
+    return random.randint(L, R)
+
+# abcdefghijklmnopqrstuvwxyz
+
+def gen_string_abc(LEN: int, ALPH_LEN: int = 26):
+    """
+    Generates a string of length LEN using the first ALPH_LEN lowercase letters of the alphabet.
+    """
+    abc = "abcdefghijklmnopqrstuvwxyz"
+    s = abc[:ALPH_LEN]
+    res = ""
+    for i in range(LEN):
+        res += random.choice(s)
+    return res
+
+def gen_string_any_aplh(LEN: int, ALPH: str):
+    """
+    Generates a string of length LEN using ALPH as the alphabet.
+    """
+    res = ""
+    # ALPH_LEN = len(ALPH)
+    for i in range(LEN):
+        kek = 1
+        res += random.choice(ALPH)
+    return res
+
+def gen_tree(N: int):
+    """
+    Generates a tree with N vertices.
+    """
+    edges = []
+    for i in range(2, N + 1):
+        v = gen_num(1, i - 1)
+        edges.append((v, i))
+    return edges
+
+def gen_DAG(N: int, M: int):
+    """
+    Generates a directed acyclic graph with N vertices and M edges.
+    """
+    edges = []
+    while len(edges) < M:
+        v = gen_num(1, N - 1)
+        u = gen_num(v + 1, N)
+        edges.append((v, u))
+    return edges
+
+def gen_graph(N: int, M: int):
+    """
+    Generates a graph with N vertices and M edges.
+    """
+    edges_set = set()
+    for i in range(M):
+        v, u = 0, 0
+        while (v, u) in edges_set or v == u:
+            v, u = gen_num(1, N), gen_num(1, N)
+            v, u = min(v, u), max(v, u)
+        edges_set.add((v, u))
+    return list(edges_set)
+
+def gen_multigraph(N: int, M: int):
+    """
+    Generates a multigraph with N vertices and M edges.
+    """
+    edges = []
+    for i in range(M):
+        v, u = -1, 0
+        while v == -1:
+            v, u = gen_num(1, N), gen_num(1, N)
+            v, u = min(v, u), max(v, u)
+        edges.append((v, u))
+    return edges
+
+def gen_directed_graph(N: int, M: int):
+    """
+    Generates a directed graph with N vertices and M edges.
+    """
+    edges_set = set()
+    for i in range(M):
+        v, u = 0, 0
+        while (v, u) in edges_set or v == u:
+            v, u = gen_num(1, N), gen_num(1, N)
+        edges_set.add((v, u))
+    return list(edges_set)
+
+def gen_connected_directed_graph(N: int, M: int):
+    """
+    Generates a directed connected graph with N vertices and M edges.
+    """
+    edges_set = set(gen_tree(N))
+    for i in range(M - (N - 1)):
+        v, u = 0, 0
+        while (v, u) in edges_set or v == u:
+            v, u = gen_num(1, N), gen_num(1, N)
+        edges_set.add((v, u))
+    return list(edges_set)
+
+def gen_connected_graph(N: int, M: int):
+    """
+    Generates a connected graph with N vertices and M edges.
+    """
+    edges_set = set(gen_tree(N))
+    for i in range(M - (N - 1)):
+        v, u = 0, 0
+        while (v, u) in edges_set or v == u:
+            v, u = gen_num(1, N), gen_num(1, N)
+            v, u = min(v, u), max(v, u)
+        edges_set.add((v, u))
+    return list(edges_set)
+
+def gen_connected_multigraph(N: int, M: int):
+    """
+    Generates a connected multigraph with N vertices and M edges.
+    """
+    edges = gen_tree(N)
+    for i in range(M - (N - 1)):
+        v, u = 0, 0
+        while v == u:
+            v, u = gen_num(1, N), gen_num(1, N)
+        edges.append((v, u))
+    return edges
+
+def gen_perm(N: int, FIR: int = 1):
+    """
+    Generates a permutation of length N with min element FIR.
+    """
+    arr = [FIR + i for i in range(N)]
+    # arr = arr[1:]
+    random.shuffle(arr)
+    return arr
+
+def gen_array(N: int, L: int, R: int):
+    """
+    Generates an array of length N with elements between L and R.
+    """
+    arr = [gen_num(L, R) for i in range(N)]
+    return arr
+
+def gen_array_pairs(N: int, L: int, R: int):
+    """
+    Generates an array of pairs of length N with elements between L and R.
+    """
+    arr = [(gen_num(L, R), gen_num(L, R)) for i in range(N)]
+    return arr
+
+def gen_array_pairs(N: int, L1: int, R1: int, L2: int, R2: int):
+    """
+    Generates an array of pairs of length N with the first elements of each pair between L1 and R1 and between L2 and R2 for the second element.
+    """
+    arr = [(gen_num(L1, R1), gen_num(L2, R2)) for i in range(N)]
+    return arr
+*/
+
+// ********************************
+
+
 #include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+
+#ifndef LOCAL
+#pragma GCC optimize("O3,unroll-loops")
+    #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+#endif
 
 using namespace std;
+using namespace __gnu_pbds;
+template<class T> // order_of_key, find_by_order
+using ordered_set = tree<T, null_type, less<T>, rb_tree_tag,
+        tree_order_statistics_node_update>;
 
 #define int int64_t
 #define float double_t
+#define cmpl complex<float>
+
 #define pii pair<int, int>
 #define pff pair<float, float>
-#define cmpl complex<float>
+#define pcc pair<cmpl, cmpl>
 #define i1 first
 #define i2 second
-#define INF 1'000'000'000'000'000'001
-#define LINF 1'000'000'001
+
+#define LINF 1'000'000'000'000'000'001
+#define INF 1'000'000'001
 #define EPS 1e-8
 #define MOD0 1'000'000'007
 #define MOD1 998'244'353
@@ -66,23 +252,22 @@ using namespace std;
 #define P1 283
 #define P2 293
 
-
 mt19937 global_rnd{};
 
 
 // NUMBER THEORY
 // ********************************
 
-int fast_pow(int n, int p) { /**    n*m = 1 (mod p)  =>  m = n**(p-2) (mod p)    **/
+int bin_pow(int n, int p) { /**    n*m = 1 (mod p)  =>  m = n**(p-2) (mod p)    **/
     if (p == 0) return 1;
-    int nn = fast_pow(n, p/2);
+    int nn = bin_pow(n, p/2);
     if (p&1) return n*nn*nn;
     return nn*nn;
 }
 
-int fast_pow(int n, int p, int mod) { /**    n*m = 1 (mod p)  =>  m = n**(p-2) (mod p)    **/
+int bin_pow(int n, int p, int mod) { /**    n*m = 1 (mod p)  =>  m = n**(p-2) (mod p)    **/
     if (p == 0) return 1;
-    int nn = fast_pow(n, p/2)%mod;
+    int nn = bin_pow(n, p/2)%mod;
     if (p&1) return (((n*nn)%mod)*nn)%mod;
     return (nn*nn)%mod;
 }
@@ -401,31 +586,52 @@ struct pair_hash {
     }
 };
 
+struct vector_hash {
+    const size_t p1 = 283, p2 = 293, m1 = 0x34fd319f;
+    
+    template<class T>
+    size_t operator () (vector<T> const & vec) const {
+        const size_t sz2 = (sizeof(T) >> 1);
+        size_t seed = vec.size();
+        for (auto x : vec) {
+            x ^= (x << sz2) + p1;
+            x ^= (x >> sz2) * p2;
+            seed ^= ((seed << sz2) + P0) ^ x;
+            seed ^= (x >> 2) + (seed >> 3) + m1;
+        }
+        return seed;
+    }
+};
+
 
 // SUFFIX STRUCTURES
 
-vector<int> suffix_array(string& s) {
+void suffix_array(string s, vector<vector<int>>& ps, vector<vector<int>>& cs) {
     s.push_back(0);
     int n = (int)s.size(), cnt = 0, cls = 0;
-    vector<int> c(n), p(n);
+    vector<int> p(n), c(n);
 
     map<char, vector<int>> t;
     for (int i = 0; i < n; ++i)
         t[s[i]].push_back(i);
 
     for (auto& [ch, ids] : t) {
-        for (auto i: ids) {
+        for (auto i : ids) {
             c[i] = cls;
             p[cnt++] = i;
         }
         ++cls;
     }
 
+    ps.emplace_back(p.begin()+1, p.end());
+    cs.emplace_back(c.begin(), prev(c.end()));
+
     for (int l = 1; cls < n; ++l) {
-        vector<vector<int>> a(cls);
+        int d = (1 << (l-1));
+        int _cls = 0;
+        cnt = 0;
         vector<int> _c(n);
-        int d = 1 << (l-1);
-        int _cls = cnt = 0;
+        vector<vector<int>> a(n);
 
         for (int i = 0; i < n; ++i) {
             int k = (p[i] - d + n) % n;
@@ -434,7 +640,7 @@ vector<int> suffix_array(string& s) {
 
         for (int i = 0; i < cls; ++i)
             for (int j = 0; j < a[i].size(); ++j) {
-                if (j == 0 || c[(a[i][j]+d)%n] != c[(a[i][j-1]+d)%n])
+                if (j == 0 || c[(a[i][j] + d) % n] != c[(a[i][j-1] + d) % n])
                     ++_cls;
                 _c[a[i][j]] = _cls-1;
                 p[cnt++] = a[i][j];
@@ -442,9 +648,39 @@ vector<int> suffix_array(string& s) {
 
         c = _c;
         cls = _cls;
-    }
 
-    return {p.begin()+1, p.end()};
+        ps.emplace_back(p.begin()+1, p.end());
+        cs.emplace_back(c.begin(), prev(c.end()));
+    }
+}
+
+// lcp of two suffixes O(logn)
+int lcp_binups(vector<vector<int>>& c, int i, int j) {
+    int res = 0;
+    for (int k = (int)(c.size())-1; k >= 0; --k)
+        if (c[k][i] == c[k][j]) {
+            res += (1<<k);
+            i += (1<<k);
+            j += (1<<k);
+        }
+    return res;
+}
+
+// Kasai, Arimura, Arikawa, Lee, Park algorithm (lcp(i) := lcp(p[i], p[i+1])
+vector<int> lcp_5(string& s, vector<int>& p, vector<int>& c) {
+    int n = (int)s.size();
+    int l = 0;
+    vector<int> lcp(n, 0);
+    for (int i = 0; i < n; ++i) {
+        if (c[i] == n)
+            continue;
+        int nxt = p[c[i]];
+        while (max(i, nxt)+l < n && s[i+l] == s[nxt+l])
+            ++l;
+        lcp[c[i]-1] = l;
+        l = max(l-1, 0l);
+    }
+    return lcp;
 }
 
 // ********************************
@@ -716,12 +952,12 @@ vector<vector<int>> kruskal(vector<tuple<int, int, int>>& e_sorted, int n) {
 // MATCHMAKING
 // KUHN'S ALGORITHM FOR BIPARTITE GRAPHS O(|E|*|V|)
 bool try_kuhn(vector<vector<int>>& g, vector<int>& match,
-              vector<bool>& mark, int v) {
-    if (mark[v])
+              vector<int>& mark, int v, int cur) {
+    if (mark[v] == cur)
         return false;
-    mark[v] = true;
+    mark[v] = cur;
     for (auto u : g[v]) {
-        if (match[u] == -1 || try_kuhn(g, match, mark, match[u])) {
+        if (match[u] == -1 || try_kuhn(g, match, mark, match[u], cur)) {
             match[u] = v;
             return true;
         }
@@ -732,11 +968,18 @@ bool try_kuhn(vector<vector<int>>& g, vector<int>& match,
 vector<pii> kuhn(vector<vector<int>>& g, int l, int r) {
     int n = l+r;
     vector<int> match(n, -1);
-    vector<bool> mark;
-    for (int v = 0; v < l; ++v) {
-        mark.assign(l, false);
-        try_kuhn(g, match, mark, v);
-    }
+    vector<int> greed(l, -1);
+    for (int v = 0; v < l; ++v)
+        for (int u = l; u < n; ++u)
+            if (match[u] == -1) {
+                match[u] = v;
+                greed[v] = u;
+                break;
+            }
+    vector<int> mark(n, 0);
+    for (int v = 0; v < l; ++v)
+        if (greed[v] == -1)
+            try_kuhn(g, match, mark, v, v+1);
     vector<pii> res;
     for (int i = 0; i < r; ++i)
         if (match[l+i] != -1)
@@ -783,7 +1026,7 @@ int lca(const vector<vector<int>>& up, const vector<int>& tin, const vector<int>
 }
 
 
-// TARJAN O(alpha(n))
+// TARJAN O(alpha(n)*(n+q))
 void tarjan(vector<vector<int>>& g, vector<bool>& mark, dsu& state, vector<int>& anc,
             vector<vector<pii>>& q, vector<int>& res, int v) {
     mark[v] = true;
@@ -830,6 +1073,101 @@ void build_centroid_tree(const vector<vector<int>>& g, vector<bool>& mark, vecto
         if (mark[u]) continue;
         build_centroid_tree(g, mark, sz, parcentr, u, nc);
     }
+}
+
+
+// HEAVY-LIGHT DECOMPOSITION
+template<class T>
+class hld {
+public:
+    struct node {
+        vector<int> edg;
+        int val;
+    };
+
+    hld(vector<node>& _g, function<int(int, int)> _op, int _defval);
+    void dfs_sz(int v, int p);
+    void build_hld(int v, int p);
+    bool is_ancestor(int u, int v);
+    void update(int v, int x);
+    void up(int& u, int& v, int& res);
+    int query(int u, int v);
+
+    int n;
+    vector<node> g;
+    vector<int> sz, par, tin, tout, head;
+
+    function<int(int,int)> op;
+    int defval;
+    T state;
+
+private:
+    int timer;
+};
+
+template<class T>
+hld<T>::hld(vector<node>& _g, function<int(int, int)> _op, int _defval) : g(_g), op(_op),
+                                                                          defval(_defval), state((int)g.size()) {
+    n = (int)g.size();
+    sz = par = tin = tout = head = vector<int>(n, 0);
+    state = T(n);
+    timer = 0;
+}
+
+template<class T>
+void hld<T>::dfs_sz(int v, int p) {
+    par[v] = p;
+    sz[v] = 1;
+    for (auto& u : g[v].edg) {
+        if (u == p)
+            continue;
+        this->dfs_sz(u, v);
+        sz[v] += sz[u];
+        if (sz[u] > sz[g[v].edg[0]])
+            swap(u, g[v].edg[0]);
+    }
+}
+
+template<class T>
+void hld<T>::build_hld(int v, int p) {
+    tin[v] = timer++;
+    state.update(tin[v], g[v].val);
+    for (auto u : g[v].edg) {
+        if (u == p)
+            continue;
+        head[u] = (u == g[v].edg[0] ? head[v] : u);
+        this->build_hld(u, v);
+    }
+    tout[v] = timer;
+}
+
+template<class T>
+bool hld<T>::is_ancestor(int u, int v) {
+    return tin[u] <= tin[v] && tin[v] < tout[u];
+}
+
+template<class T>
+void hld<T>::update(int v, int x) {
+    state.update(tin[v], x);
+}
+
+template<class T>
+void hld<T>::up(int& u, int& v, int& res) {
+    while (!this->is_ancestor(head[u], v)) {
+        res = op(res, state.query(tin[head[u]], tin[u]));
+        u = par[head[u]];
+    }
+}
+
+template<class T>
+int hld<T>::query(int u, int v) {
+    int res = defval;
+    this->up(u, v, res);
+    this->up(v, u, res);
+    if (!this->is_ancestor(u, v))
+        swap(u, v);
+    res = op(res, state.query(tin[u], tin[v]));
+    return res;
 }
 
 // ********************************
@@ -1450,7 +1788,7 @@ void fenwick::update(int i, int v) {
 // FENWICK WITH UPDATE (ADD) ON RANGE AND f IN POINT
 class mass_fenwick {
 public:
-    mass_fenwick(int _n);
+    mass_fenwick(int64_t n, int _n);
     void add(int l, int r, int v);
     int get(int i);
 private:
@@ -1458,7 +1796,7 @@ private:
     fenwick t;
 };
 
-mass_fenwick::mass_fenwick(int _n) : n(_n), t(new vector<int>(_n, 0)) {}
+mass_fenwick::mass_fenwick(int64_t n, int _n) : n(_n), t(new vector<int>(_n, 0)) {}
 
 void mass_fenwick::add(int l, int r, int v) {
     if (r < l || l <= 0)
